@@ -1,0 +1,90 @@
+/* Download the latest Blynk Library.  https://www.blynk.cc/getting-started/
+This sketch is part of a larger project (hydroponics controller), but 
+*/
+#include <SPI.h>                      //Used by Blynk
+#include <Ethernet.h>                 //Used by Blynk
+#include <BlynkSimpleEthernet.h>      //Used by Blynk
+#include <SimpleTimer.h>
+#define BLYNK_PRINT Serial
+char auth[] = "PasteAuthCodeBetweenQuotes";       //Paste code that app emailed you between "quotes"
+
+//-Digital Pins - Peristaltic Pump Variables - 00 Series Pins
+const int pumpPin[8] = { 2, 3, 4, 5, 6, 7, 8, 9 };      //Digital Pins
+uint32_t multiplier[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };    //Number of ms per ml
+uint32_t startPump = 0;                                 //Records start time
+uint32_t runCount;                                      //Determines length of time needed
+bool pumpRunning = false;
+const char *nuteType[8] = { "GH Armor Si", "GH Flora Blend", "GH CALiMAGic", "GH Kool Bloom",
+                            "GH Flora Gro", "GH Flora Micro", "GH Flora Bloom", "GH pH Down"
+                          }; //Text Printed to Terminal Widget in array position[x]^^
+
+float DOSEml;      //Step Widget (0.25 per step, send step/NO, loop values ON)
+int button = 0;    //Button Widget set to Switch
+int x;             //Correlates Array Positions with Pump Motor Pins
+int calibration;   //Step Widget (0-1000) Adjusts multiplier and applies to array position[x]
+
+BLYNK_WRITE(V4) {
+  x = param.asInt() - 1;
+}
+BLYNK_WRITE(V5) {
+  DOSEml = param.asFloat();
+}
+BLYNK_WRITE(V6) {
+  button = param.asInt();
+}
+BLYNK_WRITE(V13) {
+  calibration = param.asInt();
+}
+
+SimpleTimer timer;                    //SimpleTimer instance named timer
+WidgetTerminal terminal(V8);
+
+void setup()
+{
+  Serial.begin(9600);
+  Blynk.begin(auth);
+  while (Blynk.connect() == false) {}
+  timer.setInterval(200L, dosingPumps);
+  for (int p = 0; p <= 7; p++)
+  {
+    pinMode(pumpPin[p], OUTPUT);
+  }
+  Blynk.virtualWrite(V4, 0);
+  Blynk.virtualWrite(V5, 0);
+  Blynk.virtualWrite(V6, 0);
+  Blynk.virtualWrite(V13, 0);
+}
+
+void loop()
+{
+  Blynk.run();
+  timer.run();
+}
+
+void dosingPumps()
+{
+  if (button == 1 && pumpRunning == false)
+  {
+    multiplier[x] = calibration;
+    Blynk.virtualWrite(V4, 0);
+    Blynk.virtualWrite(V5, 0);
+    Blynk.virtualWrite(V6, 0);
+    pumpRunning = true;
+    digitalWrite(pumpPin[x], HIGH);
+    Blynk.virtualWrite(pumpPin[x] + 12, 255);
+    startPump = millis();
+    runCount = DOSEml * multiplier[x];
+    terminal.print("Dosing in: ");
+    terminal.print(DOSEml);
+    terminal.print(" milliliters of ");
+    terminal.println(nuteType[x]);
+  }
+  if (millis() - startPump > runCount)
+  {
+    digitalWrite(pumpPin[x], LOW);
+    Blynk.virtualWrite(pumpPin[x] + 12, 0);
+    pumpRunning = false;
+    button = 0;
+  }
+  terminal.flush();
+}
