@@ -71,7 +71,7 @@ void dosingPumps()
     Blynk.virtualWrite(V6, 0);
     pumpRunning = true;
     digitalWrite(pumpPin[x], HIGH);
-    Blynk.virtualWrite(pumpPin[x] + 12, 255);
+    Blynk.virtualWrite(pumpPin[x] + 12, 255);         //8 LED Widgets that indicates which pump is turned on
     startPump = millis();
     runCount = DOSEml * multiplier[x];
     terminal.print("Dosing in: ");
@@ -82,7 +82,7 @@ void dosingPumps()
   if (millis() - startPump > runCount)
   {
     digitalWrite(pumpPin[x], LOW);
-    Blynk.virtualWrite(pumpPin[x] + 12, 0);
+    Blynk.virtualWrite(pumpPin[x] + 12, 0);           //8 LED Widgets that indicates which pump is turned off
     pumpRunning = false;
     button = 0;
   }
