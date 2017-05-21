@@ -3,8 +3,8 @@
  App Setup: 
  8 - LED widgets (V5-V12), indicators for each pump
  2 - Step V widgets;
-     DOSEml; Output 0-80, Step: 0.25, Send Step-NO, Loop Values-ON
-     calibration; Output 0-1000, Step-5.0, Send Step-NO, Loop Values-ON
+     - DOSEml; Output 0-80, Step: 0.25, Send Step-NO, Loop Values-ON
+     - calibration; Output 0-1000, Step-5.0, Send Step-NO, Loop Values-ON
  1 - Button widget; set to Switch (0-1)
  1 - Menu widget; add up to 8 Items and name each accordingly
 */
