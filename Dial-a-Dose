@@ -1,9 +1,9 @@
 /* 
  Download the latest Blynk Library.  https://www.blynk.cc/getting-started/
  App Setup: 
- 8 - LED widgets (V5-V12)
+ 8 - LED widgets (V5-V12), indicators for each pump
  2 - Step V widgets;
-     DOSEml; Step: 0.25, Send Step-NO, Loop Values-ON
+     DOSEml; Output 0-80, Step: 0.25, Send Step-NO, Loop Values-ON
      calibration; Output 0-1000, Step-5.0, Send Step-NO, Loop Values-ON
  1 - Button widget; set to Switch (0-1)
  1 - Menu widget; add up to 8 Items and name each accordingly
@@ -73,9 +73,9 @@ void dosingPumps()
   if (button == 1 && pumpRunning == false)
   {
     multiplier[x] = calibration;
-    Blynk.virtualWrite(V4, 0);
-    Blynk.virtualWrite(V5, 0);
-    Blynk.virtualWrite(V6, 0);
+    Blynk.virtualWrite(V0, 0);
+    Blynk.virtualWrite(V1, 0);
+    Blynk.virtualWrite(V2, 0);
     pumpRunning = true;
     digitalWrite(pumpPin[x], HIGH);
     Blynk.virtualWrite(pumpPin[x] + 3, 255);         //LED widget illuminates when pump is turned on
