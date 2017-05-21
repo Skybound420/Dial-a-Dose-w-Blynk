@@ -51,7 +51,7 @@ void setup()
   Serial.begin(9600);
   Blynk.begin(auth);
   while (Blynk.connect() == false) {}
-  timer.setInterval(200L, dosingPumps);
+  timer.setInterval(200L, dosingPumps);   //5 readings per second to achieve 1/4ml accuracy
   for (int p = 0; p <= 7; p++)
   {
     pinMode(pumpPin[p], OUTPUT);
